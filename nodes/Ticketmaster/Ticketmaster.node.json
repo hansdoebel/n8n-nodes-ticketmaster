@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-base.ticketmaster",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Entertainment"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://developer.ticketmaster.com/"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://developer.ticketmaster.com/"
+			}
+		]
+	}
+}
