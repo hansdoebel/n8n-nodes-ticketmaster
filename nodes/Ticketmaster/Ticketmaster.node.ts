@@ -1,10 +1,12 @@
-import {
+import type {
   IExecuteFunctions,
   INodeExecutionData,
   INodeType,
   INodeTypeDescription,
 } from "n8n-workflow";
 import { NodeApiError } from "n8n-workflow";
+import { eventsDescription } from "./resources/events/EventsDescription";
+import * as eventOps from "./resources/events/operations";
 
 export class Ticketmaster implements INodeType {
   description: INodeTypeDescription = {
@@ -12,62 +14,21 @@ export class Ticketmaster implements INodeType {
     name: "ticketmaster",
     group: ["transform"],
     version: 1,
-    description: "Consume the Ticketmaster API",
+    description: "Work with Ticketmaster Discovery API",
     icon: "file:ticketmaster.svg",
-    defaults: {
-      name: "Ticketmaster",
-    },
+    defaults: { name: "Ticketmaster" },
     inputs: ["main"],
     outputs: ["main"],
-    credentials: [
-      {
-        name: "ticketmasterApi",
-        required: true,
-      },
-    ],
+    credentials: [{ name: "ticketmasterApi", required: true }],
     properties: [
       {
         displayName: "Resource",
         name: "resource",
         type: "options",
-								noDataExpression: true,
-        options: [
-          {
-            name: "Event",
-            value: "event",
-          },
-          {
-            name: "Venue",
-            value: "venue",
-          },
-        ],
+        options: [{ name: "Event", value: "event" }],
         default: "event",
-        required: true,
       },
-      {
-        displayName: "Operation",
-        name: "operation",
-        type: "options",
-								noDataExpression: true,
-        options: [
-          {
-            name: 'Get Many',
-            value: "getAll",
-            description: 'Retrieve many events',
-												action: 'Retrieve all events',
-          },
-        ],
-        default: "getAll",
-        required: true,
-      },
-      {
-        displayName: "Keyword",
-        name: "keyword",
-        type: "string",
-        default: "",
-        description:
-          'Optional keyword search term for filtering events (e.g. "rock", "football")',
-      },
+      ...eventsDescription,
     ],
   };
 
@@ -77,40 +38,33 @@ export class Ticketmaster implements INodeType {
 
     const resource = this.getNodeParameter("resource", 0) as string;
     const operation = this.getNodeParameter("operation", 0) as string;
-    const keyword = this.getNodeParameter("keyword", 0, "") as string;
-
-    const credentials = await this.getCredentials("ticketmasterApi");
-    const apiKey = credentials.apiKey as string;
 
     for (let i = 0; i < items.length; i++) {
       try {
-        let responseData;
+        let result;
 
-        if (resource === "event" && operation === "getAll") {
-          const qs: Record<string, string> = { apikey: apiKey };
-
-          if (keyword) qs.keyword = keyword;
-
-          const url = "https://app.ticketmaster.com/discovery/v2/events.json";
-
-          responseData = await this.helpers.request({
-            method: "GET",
-            uri: url,
-            qs,
-            json: true,
-          });
+        if (resource === "event") {
+          switch (operation) {
+            case "search":
+              result = await eventOps.eventSearchExecute.call(this, i);
+              break;
+            case "getDetails":
+              result = await eventOps.eventGetDetailsExecute.call(this, i);
+              break;
+            case "getImages":
+              result = await eventOps.eventGetImagesExecute.call(this, i);
+              break;
+            default:
+              throw new Error(`Unsupported operation: ${operation}`);
+          }
         } else {
-          throw new NodeApiError(this.getNode(), {
-            message: "Unknown operation/resource combination",
-          });
+          throw new Error(`Unsupported resource: ${resource}`);
         }
 
-        returnData.push({
-          json: responseData,
-        });
+        returnData.push(...result);
       } catch (error) {
         if (this.continueOnFail()) {
-          returnData.push({ json: { error: error.message } });
+          returnData.push({ json: { error: (error as Error).message } });
           continue;
         }
         throw new NodeApiError(this.getNode(), error);
