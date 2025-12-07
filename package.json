@@ -1,28 +1,41 @@
 {
 	"name": "n8n-nodes-ticketmaster",
 	"version": "0.0.1",
-	"description": "Ticketmaster custom node for n8n",
+	"description": "Ticketmaster custom node for n8n (Discovery API integration)",
 	"keywords": [
 		"n8n-community-node-package",
 		"n8n",
+		"ticketmaster",
+		"discovery-api",
 		"tickets",
-		"entertainment"
+		"entertainment",
+		"events"
 	],
 	"license": "MIT",
-	"homepage": "https://n8n.io",
+	"homepage": "https://github.com/hansdoebel/n8n-nodes-ticketmaster#readme",
 	"author": {
 		"name": "Hans Doebel",
 		"email": "dev@hansdoebel.de"
 	},
 	"repository": {
 		"type": "git",
-		"url": "github.com:hansdoebel/n8n-nodes-ticketmaster.git"
+		"url": "git+https://github.com/hansdoebel/n8n-nodes-ticketmaster.git"
+	},
+	"bugs": {
+		"url": "https://github.com/hansdoebel/n8n-nodes-ticketmaster/issues"
 	},
 	"engines": {
 		"node": ">=18.10",
 		"pnpm": ">=9.1"
 	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"packageManager": "pnpm@9.1.4",
+	"funding": {
+		"type": "buymeacoffee",
+		"url": "https://buymeacoffee.com/hansdoebel"
+	},
 	"main": "index.js",
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
