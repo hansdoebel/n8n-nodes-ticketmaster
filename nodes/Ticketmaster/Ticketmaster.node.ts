@@ -4,9 +4,17 @@ import type {
   INodeType,
   INodeTypeDescription,
 } from "n8n-workflow";
-import { NodeApiError } from "n8n-workflow";
+import { NodeApiError, NodeOperationError } from "n8n-workflow";
+
+import { attractionsDescription } from "./resources/attractions/AttractionsDescription";
+import { classificationsDescription } from "./resources/classifications/ClassificationsDescription";
 import { eventsDescription } from "./resources/events/EventsDescription";
+import { venuesDescription } from "./resources/venues/VenuesDescription";
+
+import * as attractionOps from "./resources/attractions/operations";
+import * as classificationOps from "./resources/classifications/operations";
 import * as eventOps from "./resources/events/operations";
+import * as venueOps from "./resources/venues/operations";
 
 export class Ticketmaster implements INodeType {
   description: INodeTypeDescription = {
@@ -14,6 +22,7 @@ export class Ticketmaster implements INodeType {
     name: "ticketmaster",
     group: ["transform"],
     version: 1,
+    subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
     description: "Work with Ticketmaster Discovery API",
     icon: "file:ticketmaster.svg",
     defaults: { name: "Ticketmaster" },
@@ -25,10 +34,20 @@ export class Ticketmaster implements INodeType {
         displayName: "Resource",
         name: "resource",
         type: "options",
-        options: [{ name: "Event", value: "event" }],
+        noDataExpression: true,
+        options: [
+          { name: "Attraction", value: "attraction" },
+          { name: "Classification", value: "classification" },
+          { name: "Event", value: "event" },
+          { name: "Venue", value: "venue" },
+        ],
         default: "event",
       },
+
+      ...attractionsDescription,
+      ...classificationsDescription,
       ...eventsDescription,
+      ...venuesDescription,
     ],
   };
 
@@ -41,9 +60,50 @@ export class Ticketmaster implements INodeType {
 
     for (let i = 0; i < items.length; i++) {
       try {
-        let result;
+        let result: INodeExecutionData[] = [];
 
-        if (resource === "event") {
+        if (resource === "attraction") {
+          switch (operation) {
+            case "search":
+              result = await attractionOps.attractionSearchExecute.call(
+                this,
+                i,
+              );
+              break;
+            case "getDetails":
+              result = await attractionOps.attractionGetDetailsExecute.call(
+                this,
+                i,
+              );
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Unsupported operation: ${resource}.${operation}`,
+              );
+          }
+        } else if (resource === "classification") {
+          switch (operation) {
+            case "search":
+              result = await classificationOps.classificationSearchExecute.call(
+                this,
+                i,
+              );
+              break;
+            case "getDetails":
+              result = await classificationOps.classificationGetDetailsExecute
+                .call(
+                  this,
+                  i,
+                );
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Unsupported operation: ${resource}.${operation}`,
+              );
+          }
+        } else if (resource === "event") {
           switch (operation) {
             case "search":
               result = await eventOps.eventSearchExecute.call(this, i);
@@ -55,10 +115,30 @@ export class Ticketmaster implements INodeType {
               result = await eventOps.eventGetImagesExecute.call(this, i);
               break;
             default:
-              throw new Error(`Unsupported operation: ${operation}`);
+              throw new NodeOperationError(
+                this.getNode(),
+                `Unsupported operation: ${resource}.${operation}`,
+              );
+          }
+        } else if (resource === "venue") {
+          switch (operation) {
+            case "search":
+              result = await venueOps.venueSearchExecute.call(this, i);
+              break;
+            case "getDetails":
+              result = await venueOps.venueGetDetailsExecute.call(this, i);
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Unsupported operation: ${resource}.${operation}`,
+              );
           }
         } else {
-          throw new Error(`Unsupported resource: ${resource}`);
+          throw new NodeOperationError(
+            this.getNode(),
+            `Unsupported resource: ${resource}`,
+          );
         }
 
         returnData.push(...result);

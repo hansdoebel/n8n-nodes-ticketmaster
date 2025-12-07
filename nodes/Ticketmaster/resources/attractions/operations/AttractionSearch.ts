@@ -1,15 +1,16 @@
 import type { IExecuteFunctions, INodeProperties } from "n8n-workflow";
 import { ticketmasterApiRequest } from "../../../GenericFunctions";
 
-export const classificationSearchFields: INodeProperties[] = [
+export const attractionSearchFields: INodeProperties[] = [
   {
     displayName: "Keyword",
     name: "keyword",
     type: "string",
     default: "",
-    description: "Keyword to search classifications (e.g. genre, type, etc.)",
+    description:
+      "Keyword to search for attractions (e.g. “artist”, “team”, “play”)",
     displayOptions: {
-      show: { resource: ["classification"], operation: ["search"] },
+      show: { resource: ["attraction"], operation: ["search"] },
     },
   },
   {
@@ -20,7 +21,7 @@ export const classificationSearchFields: INodeProperties[] = [
     typeOptions: { minValue: 1, maxValue: 200 },
     description: "Number of results to return (max 200)",
     displayOptions: {
-      show: { resource: ["classification"], operation: ["search"] },
+      show: { resource: ["attraction"], operation: ["search"] },
     },
   },
   {
@@ -29,9 +30,9 @@ export const classificationSearchFields: INodeProperties[] = [
     type: "number",
     default: 0,
     typeOptions: { minValue: 0 },
-    description: "Page number of the results to return",
+    description: "Page number of results to return",
     displayOptions: {
-      show: { resource: ["classification"], operation: ["search"] },
+      show: { resource: ["attraction"], operation: ["search"] },
     },
   },
   {
@@ -41,23 +42,49 @@ export const classificationSearchFields: INodeProperties[] = [
     placeholder: "Add Field",
     default: {},
     displayOptions: {
-      show: { resource: ["classification"], operation: ["search"] },
+      show: { resource: ["attraction"], operation: ["search"] },
     },
     options: [
+      {
+        displayName: "Classification ID",
+        name: "classificationId",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "Classification Name",
+        name: "classificationName",
+        type: "string",
+        default: "",
+      },
       {
         displayName: "Domain",
         name: "domain",
         type: "string",
         default: "",
-        description:
-          "Filter based on the domains where entities are available (comma-separated)",
+      },
+      {
+        displayName: "Genre ID",
+        name: "genreId",
+        type: "string",
+        default: "",
       },
       {
         displayName: "ID",
         name: "id",
         type: "string",
         default: "",
-        description: "Filter by specific classification ID",
+      },
+      {
+        displayName: "Include Family",
+        name: "includeFamily",
+        type: "options",
+        options: [
+          { name: "Yes", value: "yes" },
+          { name: "No", value: "no" },
+          { name: "Only", value: "only" },
+        ],
+        default: "yes",
       },
       {
         displayName: "Include Spellcheck",
@@ -68,8 +95,6 @@ export const classificationSearchFields: INodeProperties[] = [
           { name: "No", value: "no" },
         ],
         default: "no",
-        description:
-          "Whether to include spell check suggestions in the response",
       },
       {
         displayName: "Include Test",
@@ -81,14 +106,12 @@ export const classificationSearchFields: INodeProperties[] = [
           { name: "Only", value: "only" },
         ],
         default: "no",
-        description: "Include test classifications in the response",
       },
       {
         displayName: "Locale",
         name: "locale",
         type: "string",
-        default: "en",
-        description: 'Locale in ISO code format (e.g. "en-us,en,*")',
+        default: "",
       },
       {
         displayName: "Preferred Country",
@@ -99,14 +122,18 @@ export const classificationSearchFields: INodeProperties[] = [
           { name: "CA", value: "ca" },
         ],
         default: "us",
-        description: "Popularity boost by country, default is US",
+      },
+      {
+        displayName: "Segment ID",
+        name: "segmentId",
+        type: "string",
+        default: "",
       },
       {
         displayName: "Sort",
         name: "sort",
         type: "string",
-        default: "name,asc",
-        description: "Sorting order of the search result (e.g. name,asc)",
+        default: "relevance,desc",
       },
       {
         displayName: "Source",
@@ -119,13 +146,30 @@ export const classificationSearchFields: INodeProperties[] = [
           { name: "Universe", value: "universe" },
         ],
         default: "ticketmaster",
-        description: "Filter entities by primary or publishing source name",
+      },
+      {
+        displayName: "SubGenre ID",
+        name: "subGenreId",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "SubType ID",
+        name: "subTypeId",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "Type ID",
+        name: "typeId",
+        type: "string",
+        default: "",
       },
     ],
   },
 ];
 
-export async function classificationSearchExecute(
+export async function attractionSearchExecute(
   this: IExecuteFunctions,
   index: number,
 ) {
@@ -145,10 +189,10 @@ export async function classificationSearchExecute(
   const response = await ticketmasterApiRequest.call(
     this,
     "GET",
-    "/discovery/v2/classifications.json",
+    "/discovery/v2/attractions.json",
     qs,
   );
 
-  const classifications = response?._embedded?.classifications ?? [];
-  return classifications.map((c: any) => ({ json: c }));
+  const attractions = response?._embedded?.attractions ?? [];
+  return attractions.map((a: any) => ({ json: a }));
 }

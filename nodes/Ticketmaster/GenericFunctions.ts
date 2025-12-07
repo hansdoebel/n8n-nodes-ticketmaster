@@ -6,9 +6,6 @@ import {
   ILoadOptionsFunctions,
 } from "n8n-workflow";
 
-/**
- * Makes an authenticated API request to the Ticketmaster Discovery API.
- */
 export async function ticketmasterApiRequest(
   this: IExecuteFunctions | ILoadOptionsFunctions | IHookFunctions,
   method: IHttpRequestMethods,
@@ -39,9 +36,6 @@ export async function ticketmasterApiRequest(
   }
 }
 
-/**
- * Paginated helper version
- */
 export async function ticketmasterApiRequestAllItems(
   this: IExecuteFunctions,
   endpoint: string,

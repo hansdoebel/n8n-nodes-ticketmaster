@@ -8,7 +8,7 @@ export const eventGetDetailsFields: INodeProperties[] = [
     type: "string",
     default: "",
     required: true,
-    description: "Unique Ticketmaster Event ID (e.g. “Z7r9jZ1Ae9vZ3”).",
+    description: 'Unique Ticketmaster Event ID (e.g. “Z7r9jZ1Ae9vZ3”)',
     displayOptions: {
       show: { resource: ["event"], operation: ["getDetails"] },
     },

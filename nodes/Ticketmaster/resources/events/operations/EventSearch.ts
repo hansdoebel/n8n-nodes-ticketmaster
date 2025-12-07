@@ -1,16 +1,13 @@
 import type { IExecuteFunctions, INodeProperties } from "n8n-workflow";
 import { ticketmasterApiRequest } from "../../../GenericFunctions";
 
-// ------------------------------------------------
-//  UI
-// ------------------------------------------------
 export const eventSearchFields: INodeProperties[] = [
   {
     displayName: "Keyword",
     name: "keyword",
     type: "string",
     default: "",
-    description: 'Keyword to search for events (e.g. "rock" or "festival").',
+    description: 'Keyword to search for events (e.g. "rock" or "festival")',
     displayOptions: { show: { resource: ["event"], operation: ["search"] } },
   },
   {
@@ -19,7 +16,7 @@ export const eventSearchFields: INodeProperties[] = [
     type: "number",
     default: 20,
     typeOptions: { minValue: 1, maxValue: 200 },
-    description: "Number of results per page (max 200).",
+    description: "Number of results per page (max 200)",
     displayOptions: { show: { resource: ["event"], operation: ["search"] } },
   },
   {
@@ -28,10 +25,9 @@ export const eventSearchFields: INodeProperties[] = [
     type: "number",
     default: 0,
     typeOptions: { minValue: 0 },
-    description: "Page number of results to fetch.",
+    description: "Page number of results to fetch",
     displayOptions: { show: { resource: ["event"], operation: ["search"] } },
   },
-  // ------------- Additional Fields ---------------
   {
     displayName: "Additional Fields",
     name: "additionalFields",
@@ -40,59 +36,45 @@ export const eventSearchFields: INodeProperties[] = [
     default: {},
     displayOptions: { show: { resource: ["event"], operation: ["search"] } },
     options: [
-      { displayName: "ID", name: "id", type: "string", default: "" },
       {
         displayName: "Attraction ID",
         name: "attractionId",
         type: "string",
         default: "",
       },
-      { displayName: "Venue ID", name: "venueId", type: "string", default: "" },
       {
-        displayName: "Postal Code",
-        name: "postalCode",
+        displayName: "City",
+        name: "city",
         type: "string",
         default: "",
       },
       {
-        displayName: "Latitude/Longitude",
-        name: "latlong",
-        type: "string",
-        default: "",
-      },
-      { displayName: "Radius", name: "radius", type: "string", default: "" },
-      {
-        displayName: "Unit",
-        name: "unit",
-        type: "options",
-        options: [
-          { name: "Miles", value: "miles" },
-          { name: "Kilometers", value: "km" },
-        ],
-        default: "miles",
-      },
-      {
-        displayName: "Source",
-        name: "source",
-        type: "options",
-        options: [
-          { name: "ticketmaster", value: "ticketmaster" },
-          { name: "universe", value: "universe" },
-          { name: "frontgate", value: "frontgate" },
-          { name: "tmr", value: "tmr" },
-        ],
-        default: "",
-      },
-      { displayName: "Locale", name: "locale", type: "string", default: "" },
-      {
-        displayName: "Market ID",
-        name: "marketId",
+        displayName: "Classification ID",
+        name: "classificationId",
         type: "string",
         default: "",
       },
       {
-        displayName: "Start Date Time",
-        name: "startDateTime",
+        displayName: "Classification Name",
+        name: "classificationName",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "Country Code",
+        name: "countryCode",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "DMA ID",
+        name: "dmaId",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "Domain",
+        name: "domain",
         type: "string",
         default: "",
       },
@@ -101,6 +83,39 @@ export const eventSearchFields: INodeProperties[] = [
         name: "endDateTime",
         type: "string",
         default: "",
+      },
+      {
+        displayName: "Geo Point (GeoHash)",
+        name: "geoPoint",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "ID",
+        name: "id",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "Include Family",
+        name: "includeFamily",
+        type: "options",
+        options: [
+          { name: "Yes", value: "yes" },
+          { name: "No", value: "no" },
+          { name: "Only", value: "only" },
+        ],
+        default: "yes",
+      },
+      {
+        displayName: "Include Spellcheck",
+        name: "includeSpellcheck",
+        type: "options",
+        options: [
+          { name: "Yes", value: "yes" },
+          { name: "No", value: "no" },
+        ],
+        default: "no",
       },
       {
         displayName: "Include TBA",
@@ -135,35 +150,21 @@ export const eventSearchFields: INodeProperties[] = [
         ],
         default: "no",
       },
-      { displayName: "City", name: "city", type: "string", default: "" },
       {
-        displayName: "Country Code",
-        name: "countryCode",
+        displayName: "Latitude/Longitude",
+        name: "latlong",
         type: "string",
         default: "",
       },
       {
-        displayName: "State Code",
-        name: "stateCode",
+        displayName: "Locale",
+        name: "locale",
         type: "string",
         default: "",
       },
       {
-        displayName: "Classification Name",
-        name: "classificationName",
-        type: "string",
-        default: "",
-      },
-      {
-        displayName: "Classification ID",
-        name: "classificationId",
-        type: "string",
-        default: "",
-      },
-      { displayName: "DMA ID", name: "dmaId", type: "string", default: "" },
-      {
-        displayName: "On Sale Start Date Time",
-        name: "onsaleStartDateTime",
+        displayName: "Market ID",
+        name: "marketId",
         type: "string",
         default: "",
       },
@@ -174,31 +175,14 @@ export const eventSearchFields: INodeProperties[] = [
         default: "",
       },
       {
-        displayName: "Sort",
-        name: "sort",
-        type: "string",
-        default: "relevance,desc",
-      },
-      {
-        displayName: "Include Family",
-        name: "includeFamily",
-        type: "options",
-        options: [
-          { name: "Yes", value: "yes" },
-          { name: "No", value: "no" },
-          { name: "Only", value: "only" },
-        ],
-        default: "yes",
-      },
-      {
-        displayName: "Promoter ID",
-        name: "promoterId",
+        displayName: "On Sale Start Date Time",
+        name: "onsaleStartDateTime",
         type: "string",
         default: "",
       },
       {
-        displayName: "Geo Point (GeoHash)",
-        name: "geoPoint",
+        displayName: "Postal Code",
+        name: "postalCode",
         type: "string",
         default: "",
       },
@@ -213,23 +197,67 @@ export const eventSearchFields: INodeProperties[] = [
         default: "us",
       },
       {
-        displayName: "Include Spellcheck",
-        name: "includeSpellcheck",
+        displayName: "Promoter ID",
+        name: "promoterId",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "Radius",
+        name: "radius",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "Sort",
+        name: "sort",
+        type: "string",
+        default: "relevance,desc",
+      },
+      {
+        displayName: "Source",
+        name: "source",
         type: "options",
         options: [
-          { name: "Yes", value: "yes" },
-          { name: "No", value: "no" },
+          { name: "Frontgate", value: "frontgate" },
+          { name: "Ticketmaster", value: "ticketmaster" },
+          { name: "Tmr", value: "tmr" },
+          { name: "Universe", value: "universe" },
         ],
-        default: "no",
+        default: "ticketmaster",
       },
-      { displayName: "Domain", name: "domain", type: "string", default: "" },
+      {
+        displayName: "Start Date Time",
+        name: "startDateTime",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "State Code",
+        name: "stateCode",
+        type: "string",
+        default: "",
+      },
+      {
+        displayName: "Unit",
+        name: "unit",
+        type: "options",
+        options: [
+          { name: "Miles", value: "miles" },
+          { name: "Kilometers", value: "km" },
+        ],
+        default: "miles",
+      },
+      {
+        displayName: "Venue ID",
+        name: "venueId",
+        type: "string",
+        default: "",
+      },
     ],
   },
 ];
 
-// ------------------------------------------------
-//  EXECUTION
-// ------------------------------------------------
 export async function eventSearchExecute(
   this: IExecuteFunctions,
   index: number,

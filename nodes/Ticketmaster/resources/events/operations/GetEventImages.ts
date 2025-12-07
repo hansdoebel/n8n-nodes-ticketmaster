@@ -8,7 +8,7 @@ export const eventGetImagesFields: INodeProperties[] = [
     type: "string",
     required: true,
     default: "",
-    description: "Ticketmaster event ID for which to list images.",
+    description: 'Ticketmaster event ID for which to list images',
     displayOptions: {
       show: { resource: ["event"], operation: ["getImages"] },
     },
